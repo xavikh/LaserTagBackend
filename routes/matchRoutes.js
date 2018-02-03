@@ -33,6 +33,11 @@ api.post('/clean', function(req, res) {
   res.status(200).send(match.getInstance().clean())
 })
 
+api.post('/restart', function(req, res) {
+  //TODO:
+  res.status(200).send(match.getInstance().restart())
+})
+
 api.get('/debug', function(req, res) {
   res.status(200).send(match.getInstance().debug())
 })
