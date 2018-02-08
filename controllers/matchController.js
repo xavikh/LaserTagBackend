@@ -1,42 +1,81 @@
+'use strict'
 
+const Match = require('../models/match')
+const config = require('../config')
 
-var match = require('../controllers/CurrentMatch')
+var currentMatch = new Match();
 
-function create(req, res) {
-  //TODO: Errors
+function getMatch(req, res) {
+  var cMatch = currentMatch;
+  var elapsedTime = Date.now() - cMatch.startupTime;
+  cMatch.elapsedTime = (elapsedTime < cMatch.duration*1000)?elapsedTime:cMatch.duration*1000;
+  cMatch.leftTime = cMatch.duration*1000 - cMatch.elapsedTime;
+  cMatch.inGame = (cMatch.leftTime)?true:false;
+  res.status(200).send(currentMatch);
+}
+
+function newMatch(req, res) {
   var duration = req.body.duration;
-  var mode = req.body.mode;
-  match.getInstance().set(duration, mode);
-  res.sendStatus(200);
-})
+  var type = req.body.type;
+  currentMatch = new Match(duration, type);
+  res.status(200).send(currentMatch);
+}
 
 function start(req, res) {
-  //TODO:
-  res.status(200).send(match.getInstance().start())
-})
+  res.status(200).send(currentMatch.start());
+}
+
+function getPlayer(req, res) {
+  var nick = req.query.nick;
+  var idGun = req.query.idGun;
+  var player;
+  if(nick){
+    for (var i = 0; i < currentMatch.players.length; i++) {
+      if(currentMatch.players[i] && currentMatch.players[i].nick == nick)
+        player = currentMatch.players[i];
+    }
+  } else if(idGun){
+    player = currentMatch.players[idGun];
+  } else {
+    player = {}
+  }
+  res.status(200).send(player);
+}
 
 function addPlayer(req, res) {
-  //TODO: Errors
-  var nick = req.body.nickname;
+  var nick = req.body.nick;
   var idGun = req.body.idGun;
   var team = req.body.team;
-  match.getInstance().addPlayer(nick, idGun, team);
-  res.sendStatus(200);
-})
+  res.status(200).send(currentMatch.addPlayer(nick, idGun, team));
+}
 
-function shot(req, res) {
-  //TODO:
-  res.status(200).send(match.getInstance().addShot(0,3))
-})
+function addShot(req, res) {
+  var idGun = req.body.idGun;
+  var idVest = req.body.idVest;
+  res.status(200).send(currentMatch.addShot(idGun, idVest));
+}
 
-function clean(req, res) {
-  //TODO:
-  res.status(200).send(match.getInstance().clean())
-})
+function getShots(req, res) {
+  res.status(200).send(currentMatch.shots);
+}
 
-function debug(req, res) {
-  res.status(200).send(match.getInstance().debug())
-})
+function restart(req, res) {
+  currentMatch.restart();
+  res.status(200).send(currentMatch);
+}
 
-function modes(req, res) {
-})
+function getModes(req, res) {
+  res.status(200).send({ modes: config.MODES})
+}
+
+module.exports = {
+  getMatch,
+  newMatch,
+  start,
+  getPlayer,
+  addPlayer,
+  getShots,
+  addShot,
+  restart,
+  getModes
+};

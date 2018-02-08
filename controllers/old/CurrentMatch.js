@@ -1,6 +1,12 @@
 'use strict'
 
+const soundFX = require('../services/soundFX')
+
 var MODE = Object.freeze({"2vs2":4, "1vs1":2, "allvsall":0})
+
+function revive(id) {
+    match.players[id].lifePoints = lifePoints;
+}
 
 var CurrentMatch = (function () {
     var instance;
@@ -14,7 +20,7 @@ var CurrentMatch = (function () {
         match.shots = [];
 
         match.set = function(duration, type) {
-          match.duration = duration;
+          match.duration = duration * 1000;
           match.type = type;
         }
 
@@ -29,8 +35,8 @@ var CurrentMatch = (function () {
         match.addPlayer = function(nick, idGun, team) {
           var player = {
             nick: nick,
-            lifes: 3,
-            lifePoints: 100,
+            lifes: config.lifePoints,
+            lifePoints: config.lifes,
             points: 0,
             kills: 0,
             deaths: 0,
@@ -44,7 +50,7 @@ var CurrentMatch = (function () {
               match.players[idGun].lifePoints > 0 &&
               match.players[idVest].lifePoints > 0 &&
               match.startupTime > 0 &&
-              Date.now() < match.startupTime + match.duration * 1000){
+              Date.now() < (match.startupTime + match.duration)){
             var shot = {
               timestamp: Date.now(),
               idGun: idGun,
@@ -58,14 +64,20 @@ var CurrentMatch = (function () {
                match.players[idVest].deaths++;
                match.players[idVest].lifes--;
                if(match.players[idVest].lifes > 0){
-                 match.players[idVest].lifePoints = 100;
-                 //TODO: thread revive
+                 setTimeout(revive(idVest), 3000);
                }
              }
              match.shots.push(shot);
+             soundFX("shot");
+
              return true;
            }
            return false;
+        }
+
+        match.restart = function() {
+          match.startupTime = Date.now();
+          match.shots = [];
         }
 
         match.clean = function() {
