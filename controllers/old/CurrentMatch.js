@@ -5,7 +5,7 @@ const soundFX = require('../services/soundFX')
 var MODE = Object.freeze({"2vs2":4, "1vs1":2, "allvsall":0})
 
 function revive(id) {
-    match.players[id].lifePoints = 100;
+    match.players[id].lifePoints = lifePoints;
 }
 
 var CurrentMatch = (function () {
@@ -35,8 +35,8 @@ var CurrentMatch = (function () {
         match.addPlayer = function(nick, idGun, team) {
           var player = {
             nick: nick,
-            lifes: 3,
-            lifePoints: 100,
+            lifes: config.lifePoints,
+            lifePoints: config.lifes,
             points: 0,
             kills: 0,
             deaths: 0,

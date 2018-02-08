@@ -3,46 +3,16 @@
 const express = require ('express')
 const api = express.Router()
 
-var match = require('../controllers/CurrentMatch')
+var match = require('../controllers/matchController')
 
-api.post('/create', function(req, res) {
-  //TODO: Errors
-  var duration = req.body.duration;
-  var mode = req.body.mode;
-  match.getInstance().set(duration, mode);
-  res.sendStatus(200);
-})
-
-api.post('/start', function(req, res) {
-  //TODO:
-  res.status(200).send(match.getInstance().start())
-})
-
-api.post('/addPlayer', function(req, res) {
-  //TODO:
-  match.getInstance().addPlayer("xavikh1", 2, "blue")
-})
-
-api.post('/shot', function(req, res) {
-  //TODO:
-  res.status(200).send(match.getInstance().addShot(0,3))
-})
-
-api.post('/clean', function(req, res) {
-  //TODO:
-  res.status(200).send(match.getInstance().clean())
-})
-
-api.post('/restart', function(req, res) {
-  //TODO:
-  res.status(200).send(match.getInstance().restart())
-})
-
-api.get('/debug', function(req, res) {
-  res.status(200).send(match.getInstance().debug())
-})
-
-api.get('/modes', function(req, res) {
-})
+api.get('/', match.getMatch)
+api.post('/', match.newMatch)
+api.put('/start', match.start)
+api.get('/player', match.getPlayer)
+api.post('/player', match.addPlayer)
+api.post('/shot', match.addShot)
+api.get('/shot', match.getShots)
+api.put('/restart', match.restart)
+api.get('/modes', match.getModes)
 
 module.exports = api
