@@ -39,21 +39,27 @@ function Match(duration, type) {
   this.addShot = function(idGun, idVest) {
     var attacker = this.players[idGun];
     var injured = this.players[idVest];
+    console.log(attacker)
+    console.log(injured)
     if(attacker && injured &&
-        !utils.sameTeam(attacker, injured) &&
-        utils.isAlive(attacker) && utils.isAlive(injuered) &&
-        utils.hasStarted(match) && utils.hasFinished(match)){
+    !utils.sameTeam(attacker, injured) &&
+    utils.isAlive(attacker) && utils.isAlive(injured) &&
+    utils.hasStarted(this) && utils.hasFinished(this)){
       var shot = new Shot();
 
       attacker.points += config.pointsPerShotAttacker;
       injured.lifePoints -= config.pointsPerShotInjured;
-      if(isAlive(injured)){
+      if(utils.isAlive(injured)){
         attacker.points += config.pointsPerKill;
         attacker.kills++;
         injured.deaths++;
         injured.lifes--;
         if(injured.lifes > 0){
-          setTimeout(revive(idVest), config.reviveDelay);
+          let self = this;
+          console.log("Reviviendo al jugador " + idVest)
+          setTimeout(function (){
+            self.revive(idVest)
+          }, config.reviveDelay);
         }
       }
       this.shots.push(shot);
@@ -69,12 +75,11 @@ function Match(duration, type) {
     this.shots = [];
   }
 
-}
+  this.revive = function(id) {
+    console.log("Ha revivido el jugador " + id)
+    this.players[id].lifePoints = config.lifePoints;
+  }
 
-    //
-    // this.set = function(duration, type) {
-    //   this.duration = duration * 1000;
-    //   this.type = type;
-    // }
+}
 
 module.exports = Match;
