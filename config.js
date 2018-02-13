@@ -3,12 +3,12 @@ module.exports = {
   db: 'mongodb://localhost/laserTag',
 
   damage: 10,
-  lifepoints: 100,
+  lifePoints: 100,
   lifes: 3,
   pointsPerShotAttacker: 10,
   pointsPerShotInjured: 10,
   pointsPerKill: 100,
-  reviveDelay: 30,
+  reviveDelay: 3000,
 
   MODES: {"2vs2":4, "1vs1":2, "allvsall":0},
 

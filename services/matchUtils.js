@@ -1,5 +1,7 @@
 'use strict'
 
+const config = require('../config')
+
 function sameTeam(player1, player2){
   return player1.team == player2.team;
 }
